@@ -144,5 +144,79 @@ namespace BlogApp.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var db = new SqlContext();
+            var blog = db.Blogs.Find(id);
+
+
+            return View(blog);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(Blog blog)
+        {
+            var db = new SqlContext();
+            db.Blogs.Remove(blog);
+            db.SaveChanges();
+
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Update(int id)
+        {
+            var db = new SqlContext();
+            var blog = db.Blogs.Include(x => x.BlogCategory)
+                .Include(x => x.BlogTags).FirstOrDefault(x => x.Id == id);
+
+            ViewBag.BlogId = id;
+            ViewBag.Categories = db.Categories.ToList();
+            ViewBag.Tags = db.Tags.ToList();
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Update(BlogCreate blogCreate, int blogId)
+        {
+            var db = new SqlContext();
+
+            if (ModelState.IsValid)
+            {
+                //var eskiBlog = db.Blogs.Find(blogId);
+                //eskiBlog.BlogTags.Clear();
+                //db.SaveChanges();
+
+                var blog = new Blog();
+                blog.Id = blogId;
+
+                if (blogCreate.Publish == "true")
+                {
+                    blog.Publish = true;
+                }
+                else if (blogCreate.Publish == "false")
+                {
+                    blog.Publish = false;
+                }
+
+                blog.PublishDate = DateTime.Now;
+                blog.Tittle = blogCreate.Tittle;
+                blog.Content = blogCreate.Content;
+                blog.BlogCategoryId = blogCreate.BlogCategoryId;
+
+                var tags = db.Tags.Where(x => blogCreate.BlogTagsId.Contains(x.Id)).ToList();
+                blog.BlogTags.AddRange(tags);
+
+                db.Blogs.Update(blog);
+                db.SaveChanges();
+
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

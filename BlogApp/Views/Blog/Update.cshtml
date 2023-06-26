@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Update";
+}
+
+@model BlogCreate
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+
+            <form method="post" asp-controller="Blog" asp-action="Update">
+
+                <input type="hidden" name="blogId" value="@ViewBag.BlogId" />
+
+                <div class="form-check mb-3">
+                    <input asp-for="Publish" class="form-check-input" type="checkbox" id="publish">
+                    <label class="form-check-label" for="publish">
+                        Yayında
+                    </label>
+                </div>
+
+                <div class="mb-3">
+                    <label for="tittle" class="form-label">Başlık</label>
+                    <input asp-for="Tittle" type="text" class="form-control" id="tittle" placeholder="Başlık Adı Giriniz..">
+                    <span asp-validation-for="Tittle"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="content" class="form-label">Açıklama</label>
+                    <input asp-for="Content" type="text" class="form-control" id="content" placeholder="Açıklama Giriniz..">
+                    <span asp-validation-for="Content"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="category" class="form-label">Kategori</label>
+                    <select asp-for="BlogCategoryId" class="form-select" aria-label="Default select example">
+                        @foreach (var item in (List<Category>)ViewBag.Categories)
+                        {
+                            <option value="@item.Id">@item.CategoryName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <select asp-for="BlogTagsId" class="form-select" multiple aria-label="multiple select example">
+                        @foreach (var item in (List<Tag>)ViewBag.Tags)
+                        {
+                            <option value="@item.Id">@item.TagName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <button class="btn btn-success" type="submit">
+                        Kaydet
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

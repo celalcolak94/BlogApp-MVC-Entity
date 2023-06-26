@@ -7,10 +7,10 @@
 
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">@Model.Tittle</h5>
+        <h4 class="card-title"><b>Başlık: </b>@Model.Tittle</h4>
         <p class="card-text"><b>Kategori:</b> @Model.BlogCategory.CategoryName</p>
 
-        <h5><b>Etiketler</b></h5>
+        <b>Etiketler</b>
         <ul>
             @foreach (var item in Model?.BlogTags)
             {
