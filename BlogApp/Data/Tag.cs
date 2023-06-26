@@ -12,6 +12,6 @@ namespace BlogApp.Data
         [MaxLength(50)]
         public string TagName { get; set; }
 
-        public List<BlogTag>? BlogTags { get; set; }
+        public List<Blog>? TagBlogs { get; set; } = new List<Blog>();
     }
 }

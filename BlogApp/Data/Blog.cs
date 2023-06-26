@@ -23,7 +23,7 @@ namespace BlogApp.Data
 
         public int? BlogCategoryId { get; set; }
         public Category? BlogCategory { get; set; }
-        public List<BlogTag>? BlogTags { get; set; }
+        public List<Tag>? BlogTags { get; set; } = new List<Tag>();
 
 
     }

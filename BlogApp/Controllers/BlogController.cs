@@ -12,7 +12,6 @@ namespace BlogApp.Controllers
             var db = new SqlContext();
             var blogs = db.Blogs.Include(x => x.BlogCategory)
                 .Include(x => x.BlogTags)
-                .ThenInclude(x => x.Tag)
                 .Where(x => EF.Functions.Like(x.Tittle, "%" + aranan + "%"))
                 .Where(x => EF.Functions.Like(x.BlogCategory.CategoryName, "%" + kategoriFiltreleme + "%"))
                 .OrderBy(x => x.Tittle).ToList();
@@ -67,8 +66,8 @@ namespace BlogApp.Controllers
         {
             var db = new SqlContext();
 
-            ViewBag.categories = db.Categories.ToList();
-            ViewBag.tags = db.Tags.ToList();
+            ViewBag.Categories = db.Categories.ToList();
+            ViewBag.Tags = db.Tags.ToList();
 
             return View();
         }
@@ -96,21 +95,12 @@ namespace BlogApp.Controllers
                 blog.Content = blogCreate.Content;
                 blog.BlogCategoryId = blogCreate.BlogCategoryId;
 
+                var tags = db.Tags.Where(x => blogCreate.BlogTagsId.Contains(x.Id)).ToList();
+                blog.BlogTags.AddRange(tags);
+
 
                 db.Blogs.Add(blog);
                 db.SaveChanges();
-
-
-                foreach (var item in blogCreate.BlogTagsId)
-                {
-                    var blogtag = new BlogTag();
-                    blogtag.BlogId = blog.Id;
-                    blogtag.TagId = item;
-
-                    db.BlogTags.Add(blogtag);
-                    db.SaveChanges();
-                }
-
 
 
                 ModelState.Clear();
@@ -129,29 +119,30 @@ namespace BlogApp.Controllers
         {
             var db = new SqlContext();
 
-            var blog = db.Blogs.Find(id);
+            var blog = db.Blogs.Include(x => x.BlogCategory)
+                .Include(x => x.BlogTags).FirstOrDefault(x => x.Id == id);
 
             ViewBag.Tags = db.Tags.ToList();
-            ViewBag.Blogs = db.Blogs.ToList();
-            ViewBag.BlogId = blog.Id;
 
-
-            return View();
+            return View(blog);
         }
 
         [HttpPost]
-        public IActionResult BlogAssignTag(BlogTag blogtag)
+        public IActionResult BlogAssignTag(int[] tagsId, int blogId)
         {
             var db = new SqlContext();
 
-            ViewBag.Tags = db.Tags.ToList();
-            ViewBag.Blogs = db.Blogs.ToList();
-            ViewBag.message = "Etiket başarı ile kaydedildi.";
-
-            db.BlogTags.Add(blogtag);
+            var blog = db.Blogs.Find(blogId);
+            var tags = db.Tags.Where(x => tagsId.Contains(x.Id)).ToList();
+            blog.BlogTags.AddRange(tags);
             db.SaveChanges();
 
-            return View();
+
+            ViewBag.Tags = db.Tags.ToList();
+            ViewBag.message = "Etiket başarı ile kaydedildi.";
+
+
+            return RedirectToAction("Index");
         }
     }
 }

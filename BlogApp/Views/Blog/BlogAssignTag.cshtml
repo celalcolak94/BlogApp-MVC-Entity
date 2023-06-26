@@ -2,7 +2,23 @@
     ViewData["Title"] = "BlogAssignTag";
 }
 
-@model BlogTag
+@model Blog
+
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Tittle</h5>
+        <p class="card-text"><b>Kategori:</b> @Model.BlogCategory.CategoryName</p>
+
+        <h5><b>Etiketler</b></h5>
+        <ul>
+            @foreach (var item in Model?.BlogTags)
+            {
+                <li>@item.TagName</li>
+            }
+        </ul>
+    </div>
+</div>
 
 
 <form method="post" asp-controller="Blog" asp-action="BlogAssignTag">
@@ -14,32 +30,27 @@
         </div>
     }
 
-    
-    
-
-
-    <div class="mb-3">
-        <label class="form-label">Makale seçiniz :</label>
-        <select asp-for="BlogId" class="form-select" aria-label="multiple select example">
-            @foreach (var item in (List<Blog>)ViewBag.Blogs)
-            {
-                if (item.Id == ViewBag.BlogId)
-                {
-                    <option value="@item.Id" selected>@item.Tittle</option>
-                }
-
-                <option value="@item.Id">@item.Tittle</option>
-            }
-        </select>
-    </div>
+    <input type="hidden" name="blogId" value="@Model.Id" />
 
     <div class="mb-3">
         <label class="form-label">Etiket seçiniz :</label>
-        <select asp-for="TagId" class="form-select" aria-label="multiple select example">
+
+        <select name="tagsId" class="form-select" multiple>
+
             @foreach (var item in (List<Tag>)ViewBag.Tags)
             {
-                <option value="@item.Id">@item.TagName</option>
+                @if (Model.BlogTags.Any(x => x.Id == item.Id))
+                {
+                    <option disabled value="@item.Id">@item.TagName</option>
+                }
+                else
+                {
+                    <option value="@item.Id">@item.TagName</option>
+                }
+
+                
             }
+
         </select>
     </div>
     <button class="btn btn-success" type="submit">Ekle</button>

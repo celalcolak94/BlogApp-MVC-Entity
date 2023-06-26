@@ -120,13 +120,7 @@
                             <td>@blog.Tittle</td>
                             <td>@blog.Content</td>
                             <td>@blog.BlogCategory?.CategoryName</td>
-                            <td>
-                                @foreach (var item in blog.BlogTags)
-                                {
-                                    <span>@item.Tag.TagName</span>
-
-                                }
-                            </td>
+                            <td>@string.Join(", ",blog?.BlogTags?.Select(x => x.TagName).ToArray())</td>
                             <td>
                                 @if (blog.Publish == true)
                                 {
